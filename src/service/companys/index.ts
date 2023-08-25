@@ -68,7 +68,7 @@ class scraper {
         return response;
     }
 
-    async getPage(url:any): Promise<any> {
+    async getHtml(url:string): Promise<any> {
         const html = await gotScraping({
             url,
             headerGeneratorOptions: {
@@ -78,7 +78,12 @@ class scraper {
                 operatingSystems: ["linux"],
             },
         });
-        const $ = load(`${html.body}`);
+
+        return load(`${html.body}`);
+    }
+
+    async jobsList(url:any): Promise<any> {
+        const $ = await this.getHtml(url);
         let result = [];
         let job_id, name, location, information, description, link, job_title, posted_date;
         
@@ -109,11 +114,30 @@ class scraper {
                 this.create(body);
             }
         })
+
+        const currentPage:number = $('nav[aria-label="pagination"]').find('button[data-testid="pagination-page-current"]').text();
+        this.getPagination(url, currentPage)
+
         return result;
     }
 
+    async getPagination(url:string, currentPage:number): Promise<any> {
+        const $ = await this.getHtml(url);
+
+        const pageCount = Number(currentPage) + 1;
+        const linkId = `pagination-page-${pageCount}`
+        console.log("current page: " + currentPage)
+        
+        $('nav.ecydgvn0 > div').each((index, element) => {
+            const link = $(element).find('a[data-testid='+linkId+']').attr('href');
+            if(link != undefined) { 
+                this.jobsList(`https://ca.indeed.com${link}`) 
+            }
+        })
+    }
+
     main(url:string): Promise<any> {
-        const result = this.getPage(url);
+        const result = this.jobsList(url);
         return result;
     }
 }
