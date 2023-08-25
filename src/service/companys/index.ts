@@ -11,9 +11,6 @@ class scraper {
             appled: false
         }
 
-        console.log(companyData)
-        console.log("-------------")
-
         try {
             response = await PRISMA.companys.create({
                 data: companyData,
