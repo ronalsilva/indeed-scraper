@@ -9,14 +9,12 @@ interface CompanyData {
     location: string;
     description: string;
     link: string;
-    salary: string;
+    information: string;
     posted_date: string;
     appled?: boolean;
 }
 
 class scraper {
-
-
     async create(body:CompanyData): Promise<any> {
         let response;
         const companyData = {
@@ -92,7 +90,7 @@ class scraper {
         });
         const $ = load(`${html.body}`);
         let result = [];
-        let job_id, name, location, salary, description, link, job_title, posted_date;
+        let job_id, name, location, information, description, link, job_title, posted_date;
         
 
         $('#mosaic-provider-jobcards ul li').each((index, element) => {
@@ -105,13 +103,18 @@ class scraper {
                 const snippet = $(element).text();
                 description = "- "+ snippet+", -"+snippet;
             })
+
+            $(element).find('.cardOutline.tapItem.result .job-snippet ul li').each(function() {
+                const informationText = $(element).text();
+                information = " / - / "+ informationText+" / - / "+informationText;
+            })
             location = $(element).find('.cardOutline.tapItem.result .companyLocation').text();
-            salary = $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet')? $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet').text():""; 
+            information = $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet')? $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet').text():""; 
 
             if(job_id != undefined && name != undefined) {
                 job_id = job_id.replace('cardOutline tapItem dd-privacy-allow result ', '').split(' ')[0];
 
-                const body:CompanyData = { job_id, name, posted_date, job_title, link, location, salary, description }
+                const body:CompanyData = { job_id, name, posted_date, job_title, link, location, information, description }
 
                 this.create(body);
             }
