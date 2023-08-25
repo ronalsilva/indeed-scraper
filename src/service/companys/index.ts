@@ -2,19 +2,31 @@ import { PRISMA } from "../../config/db.config";
 import { load } from "cheerio";
 import { gotScraping } from 'got-scraping';
 
+interface CompanyData {
+    job_id: string;
+    name: string;
+    job_title: string,
+    location: string;
+    description: string;
+    link: string;
+    salary: string;
+    posted_date: string;
+    appled?: boolean;
+}
+
 class scraper {
-    async create(body: any): Promise<any> {
+
+
+    async create(body:CompanyData): Promise<any> {
         let response;
         const companyData = {
-            job_id: body.job_id,
-            name: body.job_id,
-            address: body.job_id,
-            description: body.job_id,
-            link: body.job_id,
-            information: body.job_id,
-            posted_date: body.job_id,
-            appled: body.job_id
+            ...body,
+            appled: false
         }
+
+        console.log(companyData)
+        console.log("-------------")
+
         try {
             response = await PRISMA.companys.create({
                 data: companyData,
@@ -83,32 +95,25 @@ class scraper {
         let job_id, name, location, salary, description, link, job_title, posted_date;
         
 
-        $('#mosaic-provider-jobcards ul li').each(function() {
-            job_id = $(this).find('.cardOutline.tapItem.result').attr('class');
-            name = $(this).find('.cardOutline.tapItem.result .companyName').text();
-            posted_date = $(this).find('.cardOutline.tapItem.result span.date').text();
-            job_title = $(this).find('.cardOutline.tapItem.result a.jcs-JobTitle span').text();
-            link = "https://ca.indeed.com/"+$(this).find('.cardOutline.tapItem.result a.jcs-JobTitle').attr('href');
-            $(this).find('.cardOutline.tapItem.result .job-snippet ul li').each(function() {
-                const snippet = $(this).text();
+        $('#mosaic-provider-jobcards ul li').each((index, element) => {
+            job_id = $(element).find('.cardOutline.tapItem.result').attr('class');
+            name = $(element).find('.cardOutline.tapItem.result .companyName').text();
+            posted_date = $(element).find('.cardOutline.tapItem.result span.date').text();
+            job_title = $(element).find('.cardOutline.tapItem.result a.jcs-JobTitle span').text();
+            link = "https://ca.indeed.com/"+$(element).find('.cardOutline.tapItem.result a.jcs-JobTitle').attr('href');
+            $(element).find('.cardOutline.tapItem.result .job-snippet ul li').each(function() {
+                const snippet = $(element).text();
                 description = "- "+ snippet+", -"+snippet;
             })
-            location = $(this).find('.cardOutline.tapItem.result .companyLocation').text();
-            salary = $(this).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet')? $(this).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet').text():""; 
+            location = $(element).find('.cardOutline.tapItem.result .companyLocation').text();
+            salary = $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet')? $(element).find('.cardOutline.tapItem.result .salaryOnly .attribute_snippet').text():""; 
 
             if(job_id != undefined && name != undefined) {
                 job_id = job_id.replace('cardOutline tapItem dd-privacy-allow result ', '').split(' ')[0];
 
-                const body = { job_id, name, posted_date, job_title, link, location, salary }
+                const body:CompanyData = { job_id, name, posted_date, job_title, link, location, salary, description }
 
-                console.log(job_id)
-                console.log(name)
-                console.log(posted_date)
-                console.log(job_title)
-                console.log(link)
-                console.log(location)
-                console.log(salary)
-                console.log("-------------------------")
+                this.create(body);
             }
         })
         return result;
