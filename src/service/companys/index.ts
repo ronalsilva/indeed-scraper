@@ -16,7 +16,20 @@ class scraper {
                 data: companyData,
             });
         } catch (error) {
-            console.log("Error on create data of company")
+            switch (error.code) {
+                case 'P2002':
+                    console.log(`registered company ${error.meta.target}: ${body.job_id}`)
+                    break;
+                case 'P1013':
+                    console.log(`Invalid field ${error.meta.target}`)
+                    break;
+                case 'P1017':
+                    console.log(`The server closed the connection.`)
+                    break;
+                default:
+                    console.log(`The server closed the connection.`)
+                    break;
+            }
         }
 
         return response;
