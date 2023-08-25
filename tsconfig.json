@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2018",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "sourceMap": true,
+    // "noImplicitAny": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "types": [],
+    "paths": {
+      "@configs/*": ["./src/utils/*"],
+    },
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@types/node/index.d.ts",
+  ]
+}
