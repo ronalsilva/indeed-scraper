@@ -1,18 +1,7 @@
 import { PRISMA } from "../../config/db.config";
 import { load } from "cheerio";
 import { gotScraping } from 'got-scraping';
-
-interface CompanyData {
-    job_id: string;
-    name: string;
-    job_title: string,
-    location: string;
-    description: string;
-    link: string;
-    information: string;
-    posted_date: string;
-    appled?: boolean;
-}
+import { CompanyData, SearchComapnyData } from "../../interface/companys";
 
 class scraper {
     async create(body:CompanyData): Promise<any> {
@@ -36,17 +25,11 @@ class scraper {
         return response;
     }
 
-    async update(body: any): Promise<any> {
+    async update(body: CompanyData): Promise<any> {
         let response;
         const companyData = {
-            job_id: body.job_id,
-            name: body.job_id,
-            address: body.job_id,
-            description: body.job_id,
-            link: body.job_id,
-            information: body.job_id,
-            posted_date: body.job_id,
-            appled: body.job_id
+            ...body,
+            appled: false
         }
         try {
             response = await PRISMA.companys.update({
@@ -62,14 +45,11 @@ class scraper {
         return response;
     }
 
-    async get(job_id: String, company_id?: String): Promise<any> {
+    async get(serch:SearchComapnyData): Promise<any> {
         let response;
-
-        const whereData:object = company_id? { job_id, company_id }: { job_id };
-
         try {
             response = await PRISMA.companys.findMany({
-                where: whereData
+                where: serch
             })
         } catch (error) {
             console.log("Company not found")
