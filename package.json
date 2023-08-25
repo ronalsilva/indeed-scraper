@@ -1,5 +1,5 @@
 {
-  "name": "BFF-RestAPI-base",
+  "name": "indeed-scraper",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx --fix"
   },
   "author": "Ronald Junger",
-  "homepage": "https://github.com/ronalsilva/BFF-RestAPI-base#readme",
+  "homepage": "https://github.com/ronalsilva/indeed-scraper",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.16.0",
